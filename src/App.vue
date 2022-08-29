@@ -1,28 +1,35 @@
 <template>
-  
-  <HelloWorld msg="Hello from parent"/>
-  
+  <div class ="main">
+    <Top></Top>
+    <div style = "display: flex; height: 50%">
+      <Left></Left>
+      <Right></Right>
+    </div>
+    <Bottom></Bottom>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import Top from './components/Top.vue';
+import Left from './components/Left.vue';
+import Right from './components/Right.vue';
+import Bottom from './components/Bottom.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
-  }
+    Top,
+    Left,
+    Right,
+    Bottom
+}
 });
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  .main {
+    height: 900px;
+  }
+
 </style>
