@@ -14,6 +14,7 @@
     "bootstrap-icons-vue": "^1.8.1",
     "bootstrap-vue-3": "^0.2.12",
     "core-js": "^3.6.5",
+    "leaflet": "^1.8.0",
     "mitt": "^3.0.0",
     "mqtt": "^4.3.7",
     "opencv.js": "^1.2.1",
