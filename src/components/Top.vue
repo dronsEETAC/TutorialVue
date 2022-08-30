@@ -1,12 +1,13 @@
 <template>
     <div class="topStyle">
-        <div style = "margin-left: 20%">
+        <div style = "display: flex; margin-left: 20%">
        
             <b-button @click="alertClicked" style="margin: 1%; width:15%" variant="primary">Alert</b-button>
             <b-button @click="showParametersPopUp = true" style="margin: 1%; width:15%" variant="secondary">Parameters</b-button>
             <Parameters v-if="showParametersPopUp" @close="closeParameters">
             </Parameters>
-            <b-button style="margin: 1%; width:15%" variant="success">Success</b-button>
+            <b-button @click="getValue" style="margin: 1%; width:15%" variant="success">Get Value</b-button>
+            <b-form-input style = "width:8%; margin-top:1%" disabled = "True" v-model="value" size="lg"></b-form-input> 
             <b-button style="margin: 1%; width:15%" variant="danger">Danger</b-button>
      
         </div>
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-import { defineComponent, ref,inject  } from 'vue'
+import { onMounted,defineComponent, ref,inject  } from 'vue'
 import Swal from 'sweetalert2'
 import Parameters from './Parameters.vue'
 
@@ -33,7 +34,16 @@ export default defineComponent({
         let username = ref(undefined);
         let age= ref(undefined);
         let showParametersPopUp = ref (false)
+        let value = ref (undefined)
         const emitter = inject('emitter');
+        let client = inject('mqttClient');
+        onMounted(() => {
+            client.on('message', (topic, message) => {
+                 if (topic == 'Value') {
+                    value.value = message
+                 }
+            })
+        })
         function alertClicked () {
             Swal.fire('Alert clicked')
         }
@@ -46,15 +56,23 @@ export default defineComponent({
         function closeParameters() {
             showParametersPopUp.value= false
         }
+        function getValue () {
+            client.publish("getValue", "");
+            client.subscribe("Value");
+            //value.value = 33
+        }
 
         return {
             alertClicked,
             InputUsername,
             closeParameters,
+            getValue,
             username,
             age,
             emitter,
-            showParametersPopUp
+            showParametersPopUp,
+            value,
+            client
         }
     }
 })
