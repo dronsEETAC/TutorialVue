@@ -10,6 +10,8 @@
                     </div>
                 </div> 
                 <div style = "display: flex; margin-left: 20%">
+                    <b-button style="width:20%;margin-left:1%; margin-top:5%" @click="load" variant="primary" size = "lg">Load last flight plan</b-button>
+                    <b-button style="width:20%;margin-left:1%; margin-top:5%" @click="save" variant="info" size = "lg">Save flight plan</b-button>
                     <b-button style="width:20%;margin-left:1%; margin-top:5%" @click="clear" variant="warning" size = "lg">Clear</b-button>
                     <b-button style="width:20%;margin-left:1%; margin-top:5%" @click="close" variant="danger" size = "lg">Close</b-button>
                 </div>
@@ -22,6 +24,9 @@
 <script>
 import { onMounted, ref} from 'vue'
 import leaflet from 'leaflet'
+import axios from 'axios'
+import Swal from 'sweetalert2'
+
 export default {
     setup (props,context) {
         let map;
@@ -30,7 +35,7 @@ export default {
         let waypoints = ref([]);
         let tmpLine = undefined;
         onMounted (() => {
-             map = leaflet.map('map').setView([41.276486, 1.9886], 13);
+             map = leaflet.map('map').setView([41.276486, 1.9886], 19);
              /* leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                  maxZoom: 21,
                  attribution: '© OpenStreetMap'
@@ -54,6 +59,20 @@ export default {
         function close() {
             context.emit('close')  
         }
+
+        function load() {
+             axios.get('http://localhost:4000/data')
+                .then(data => {
+                    let n = data.data.length;
+                    if (n>0) {
+                        waypoints.value = data.data[n-1];
+                        data.data[n-1].forEach(wp => { 
+                            leaflet.marker(wp).addTo(map)
+                        });
+                    }
+
+                })
+        }
         function onMapClick(e) {
             count = count+1;
             console.log (e.latlng)
@@ -71,11 +90,16 @@ export default {
             waypoints.value.push (e.latlng);
             if (waypoints.value.length > 1)
                 leaflet.polyline(waypoints.value, {color: 'red'}).addTo(map);
-            leaflet.marker(e.latlng).addTo(map).bindTooltip(count.toString(),  {
+            let wp = leaflet.marker(e.latlng, {draggable:'true'}).addTo(map).bindTooltip(count.toString(),  {
                             permanent: true,
                             direction: 'center',
                             className: "my_labels"
                          });
+           /*  wp.on('dragend', function(event){
+                var marker = event.target;
+                var position = marker.getLatLng();
+                console.log ('moving to ', position)
+            }); */
         
         }
         function onMapOver(e) {
@@ -112,6 +136,32 @@ export default {
             });
 
         }
+
+        function save() {
+            Swal.fire({
+                title: "Save flight plan?",
+                text: "Are you sure? ",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Yes!"
+            }).then((result) => { 
+                if (result.value) { // <-- if confirmed
+                    let data = JSON.stringify (waypoints.value)
+                    axios.post("http://localhost:4000/data", data,{
+                    headers: {
+                        "Content-type": "application/json",
+                    }})
+                    .then(response => {
+                        Swal.fire('Done!');
+                        context.emit('close')  
+
+                     });
+                }
+               
+            });
+          
+        }
         
 
         return {
@@ -119,6 +169,8 @@ export default {
             onMapClick,
             onMapOver,
             clear,
+            save,
+            load,
             map,
             popup,
             count,
