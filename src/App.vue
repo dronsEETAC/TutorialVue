@@ -12,11 +12,13 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { onMounted, defineComponent, ref } from 'vue';
 import Top from './components/Top.vue';
 import Left from './components/Left.vue';
 import Right from './components/Right.vue';
 import Bottom from './components/Bottom.vue';
+import {io} from 'socket.io-client'
+import Swal from 'sweetalert2'
 
 export default defineComponent({
   name: 'App',
@@ -28,12 +30,33 @@ export default defineComponent({
   },
   setup () {
     let connected = ref (false)
+    const socket = io ('http://localhost:5000')
+    onMounted (()=>{
+      socket.on('connected', (msg) => {
+          Swal.fire({
+                title: "Notification on connection",
+                text: msg,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Yes"
+          }).then((result) => { // <--
+                if (result.value) { // <-- if confirmed
+                  connected.value = true;
+                }
+          }); 
+
+
+    });
+      })
     function toggle () {
-      connected.value = !connected.value;
+      socket.emit ('connectPlatform')
+      //connected.value = !connected.value;
     }
     return {
       toggle,
-      connected
+      connected,
+      socket
       
     }
   }
