@@ -10,7 +10,7 @@ npm run serve
 
 ### Video tutorial     
 
-[Video tutorial](https://www.youtube.com/playlist?list=PL64O0POFYjHoeq8dfP-XYPCoNlehSiR_B)
+[Link to the video tutorial](https://www.youtube.com/playlist?list=PL64O0POFYjHoeq8dfP-XYPCoNlehSiR_B)
 
 
 
