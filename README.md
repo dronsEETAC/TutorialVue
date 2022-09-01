@@ -2,23 +2,15 @@
 
 ## Project setup
 ```
+git clone 
+cd vue-tutorial
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Video tutorial
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+[Video tutorial]([https://www.youtube.com/playlist?list=PL64O0POFYjHoeq8dfP-XYPCoNlehSiR_B]).
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
